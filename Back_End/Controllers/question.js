@@ -1,3 +1,4 @@
+const {request,response} = require ("express")
 const db = require("../Models/models")
 
 // Function to add questions by a medecin to a specific patient

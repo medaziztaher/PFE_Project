@@ -1,4 +1,4 @@
-const {req,res} = require('express');
+const {request,response} = require('express');
 const db = require('../Models/models');
 
 const ajoutermedicament = async (req, res) => {

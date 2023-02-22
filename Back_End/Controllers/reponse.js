@@ -1,5 +1,4 @@
-const express = require('express');
-const router = express.Router();
+const {request,response} = require('express');
 const db = require('../Models/models');
 
 // Get all responses for a patient by a medecin
