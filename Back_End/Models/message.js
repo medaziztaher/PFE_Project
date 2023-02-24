@@ -15,11 +15,10 @@ const MessageSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  status: {
-    type: String,
-    enum: ['lu', 'non lu'],
-    default: 'non lu'
-  },
+  discution: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref:'discution'
+  }
 }, { timestamps: true });
 
 const message = mongoose.model('message', MessageSchema);

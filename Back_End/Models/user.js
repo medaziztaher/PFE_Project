@@ -11,8 +11,18 @@ const userSchema = new mongoose.Schema(
     nom: { type: String, required: true },
     prenom: { type: String, required: true },
     adresse: { type: String },
-    liste_d_invitations: [{ type: mongoose.Schema.Types.ObjectId, ref: 'invitation' }],
-    liste_de_messages: [{ type: mongoose.Schema.Types.ObjectId, ref: 'message' }]
+    liste_d_invitations: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'invitation' 
+      }
+    ],
+    liste_de_discution: [
+      {
+         type: mongoose.Schema.Types.ObjectId,
+          ref: 'discution'
+     }
+    ]
   },
   options
 );

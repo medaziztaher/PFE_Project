@@ -151,6 +151,80 @@ const refuse_inv = async (req, res) => {
       res.status(500).send('Server error');
     }
 };
+
+const sendMessage = async (req, res) => {
+  try {
+    const emitterId = req.user.id;
+    const receiverId = req.params.id;
+    const messageText = req.body.messageText;
+
+    // Check if there is already a discussion between the sender and receiver
+    let existingDiscussion = await db.discussion.findOne({
+        $or: [
+          { users: [emitterId, receiverId] },
+          { users: [receiverId, emitterId] },
+        ],
+      });
+  
+      // If no existing discussion, create a new one
+      if (!existingDiscussion) {
+        existingDiscussion = await db.discussion.create({
+          users: [emitterId, receiverId],
+          messages: [],
+        });
+         // Save the discussion_id in the list_de_discution of both users
+         await db.user.findByIdAndUpdate(emitterId, { $push: { list_de_discution: existingDiscussion._id } });
+         await db.user.findByIdAndUpdate(receiverId, { $push: { list_de_discution: existingDiscussion._id } });
+      }
+  
+      // Create a new message and add it to the existing discussion
+      const newMessage = await db.message.create({
+        _emeteur: emitterId,
+        _recepteur: receiverId,
+        message_texte: messageText,
+        discussion: existingDiscussion._id, // Link the message to the discussion
+      });
+      existingDiscussion.messages.push(newMessage._id);
+      await existingDiscussion.save();
+  
+      // Emit a message event using socket.io
+      req.app.io.emit('message', newMessage);
+  
+      return res.status(201).json(newMessage);
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
+};
+const get_discution = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const otherUserId = req.params.id;
+
+    // Find the discussion between the two users
+    const discussion = await db.discussion.findOne({
+      $or: [
+        { users: [userId, otherUserId] },
+        { users: [otherUserId, userId] },
+      ],
+    });
+
+    if (!discussion) {
+      return res.status(404).json({ error: 'Discussion not found' });
+    }
+
+    // Get all messages in the discussion, sorted by the sent date
+    const messages = await db.message.find(
+      { discussion: discussion._id },
+      { message_text: 1, _id: 0 }
+    ).sort({ sent_date: 1 });
+
+    return res.status(200).json(messages);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+
   
   
 
@@ -160,7 +234,9 @@ const user ={
     enoyer_inv,
     receive_inv,
     accept_inv,
-    refuse_inv
+    refuse_inv,
+    sendMessage,
+    get_discution
 }
 
 

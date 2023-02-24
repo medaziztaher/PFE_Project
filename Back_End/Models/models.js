@@ -1,3 +1,4 @@
+const Discussion = require("./discution")
 const { user,medecin,patient } = require("./user")
 
 
@@ -12,6 +13,7 @@ module.exports={
     medicament : require("./medicament"),
     question : require("./question"),
     reponse : require("./reponse"),
-    suivi : require('./suivi')
+    suivi : require('./suivi'),
+    discussion: require('./discution')
 }
 
