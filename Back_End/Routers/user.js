@@ -8,7 +8,7 @@ const auth =require("../middleware/auth")
 
 router.post('/signup',signup)
 
-router.post('/auth',auth)
+router.post('/signin',auth)
 
 router.post('/',auth,user.enoyer_inv)
 
