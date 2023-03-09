@@ -8,18 +8,11 @@ const privateKey =process.env.AUTH_PRIVETKEY;
 // Authentication function
 const signin = async (req, res) => {
   // Extract username or email and password from request body
-  const { usernameoremail, password } = req.body;
-
-  // Check if username or email and password are provided
-  if (!usernameoremail || !password) {
-    return res.status(400).json({ message: "Empty credentials supplied" });
-  }
-
+  const  usernameoremail = req.body.usernameoremail
+  const password  = req.body.password
   try {
     // Check if a user with the provided username or email exists
-    const user = await db.user.findOne({
-      $or: [{ email: usernameoremail }, { username: usernameoremail }],
-    })
+    const user = await db.user.findOne({email: usernameoremail})
 
     if (!user) {
       return res.status(401).json({ message: "Invalid credentials" });
@@ -47,7 +40,7 @@ const signin = async (req, res) => {
       message: `You have successfully logged in as ${user.role}`,
       token,
       [username]: {
-        _id : savedUser._id,
+        _id : user._id,
         email: user.email,
         nom: user.nom,
         prenom: user.prenom,

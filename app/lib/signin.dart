@@ -12,21 +12,32 @@ class AuthPage extends StatefulWidget {
 
 class _AuthPageState extends State<AuthPage> {
   bool isRememberMe = false;
+  String _selectedusernameOrEmail ='';
+  String _selectedpassword='';
+  bool _isLoading = false;
   final _formKey = GlobalKey<FormState>();
-  String _usernameOrEmail = '';
-  String _password = '';
+  final _usernameOrEmailController = TextEditingController();
+  final _passwordController = TextEditingController();
   String _errorMessage = '';
+  void dispose(){
+    _usernameOrEmailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   void _submitForm() async {
+    
     if (_formKey.currentState!.validate()) {
-      final url = 'http://10.0.2.2:5002/auth'; 
+      setState(() {
+        _isLoading = true;
+      });
+      final url = Uri.parse('http://10.0.2.2:5002/signin'); 
       final response = await http.post(
-        Uri.parse(url),
+        url,
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
-          'username': _usernameOrEmail,
-          'email': _usernameOrEmail,
-          'password': _password,
+          'usernameoremail':_usernameOrEmailController.text,
+          'password':_passwordController.text,
         }),
       );
       if (response.statusCode == 200) {
@@ -34,7 +45,10 @@ class _AuthPageState extends State<AuthPage> {
         // save token to shared preferences or somewhere else
         final token = responseData['token'];
         // navigate to the next page
-        Navigator.pushReplacementNamed(context, '/home');
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => SignupScreen()),
+          );
       } else {
         final errorMessage = json.decode(response.body)['message'];
         setState(() {
@@ -43,7 +57,8 @@ class _AuthPageState extends State<AuthPage> {
       }
     }
   }
-Widget buildEmail() {
+  
+  Widget buildEmail() {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: <Widget>[
@@ -71,6 +86,7 @@ Widget buildEmail() {
         ),
         height: 60,
         child: TextFormField(
+          controller: _usernameOrEmailController,
           decoration: InputDecoration(
             icon: Icon(
               Icons.person,
@@ -102,14 +118,16 @@ Widget buildEmail() {
             return null;
           },
           onSaved: (value) {
-            _usernameOrEmail = value!;
+            _selectedusernameOrEmail=value!;
+            _usernameOrEmailController.text =_selectedusernameOrEmail;
           },
         ),
       ),
     ],
   );
 }
-Widget buildPassword() {
+  
+  Widget buildPassword() {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: <Widget>[
@@ -130,6 +148,7 @@ Widget buildPassword() {
             ]),
         height: 60,
         child: TextFormField(
+          controller: _passwordController,
           decoration: InputDecoration(
             icon: Icon(
               Icons.vpn_key,
@@ -162,7 +181,8 @@ Widget buildPassword() {
             return null;
           },
           onSaved: (value) {
-            _password = value!;
+            _selectedpassword=value!;
+            _passwordController.text =_selectedpassword;
           },
         ),
       ),
@@ -170,7 +190,7 @@ Widget buildPassword() {
   );
 }
   
-Widget buildLoginBtn() {
+  Widget buildLoginBtn() {
   return Container(
     padding: EdgeInsets.symmetric(vertical: 25.0),
     width: double.infinity,
@@ -196,7 +216,8 @@ Widget buildLoginBtn() {
     ),
   );
 }
-Widget buildRememberCb() {
+  
+  Widget buildRememberCb() {
 return Container(
 height: 20,
 child: Row(
@@ -222,7 +243,8 @@ style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
 ),
 );
 }
-Widget buildForgotPassBtn() {
+  
+  Widget buildForgotPassBtn() {
   return Container(
     alignment: Alignment.centerRight,
     child: Padding(
@@ -266,7 +288,8 @@ Widget buildForgotPassBtn() {
     ),
   );
 }
-Widget buildSignupBtn() {
+  
+  Widget buildSignupBtn() {
   return Row(
     children: [
       Text(

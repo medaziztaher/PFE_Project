@@ -248,7 +248,7 @@ const signup = async (req, res) => {
     // Generate a JWT token
     const token = jwt.sign(
       { id: savedUser._id, role: savedUser.role },
-      privateKey,
+      process.env.AUTH_PRIVETKEY,
       { expiresIn: "24h" }
     );
     const username = savedUser.username;

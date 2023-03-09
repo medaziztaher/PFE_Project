@@ -83,7 +83,6 @@ class _SignupScreenState extends State<SignupScreen> {
           });
         }
       } catch (error) {
-        debugPrint("here12");
         setState(() {
           _errorMessage =
               'Une erreur est survenue lors de la creation du medecin ou le patient';
