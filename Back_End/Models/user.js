@@ -10,7 +10,10 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true },
     nom: { type: String, required: true },
     prenom: { type: String, required: true },
+    telephone:{type:String},
+    sexe: { type: String, enum: ['homme', 'femme'], required: true },
     adresse: { type: String },
+    verified :{ type: Boolean, default:false},
     liste_d_invitations: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -45,7 +48,6 @@ const medecinSchema = new mongoose.Schema(
 const patientSchema = new mongoose.Schema(
   {
     date_naissance: { type: Date },
-    sexe: { type: String, enum: ['homme', 'femme'], required: true },
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user',

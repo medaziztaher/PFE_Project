@@ -11,9 +11,9 @@ const db = require("./Models/models");
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
-
+const bodyParser = require('express').json;
 const port = 5002;
-app.use(express.json());
+app.use(bodyParser());
 app.use(cors("*"));
 require("./Connexion/connexion");
 app.use(user);

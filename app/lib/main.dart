@@ -1,4 +1,4 @@
-import 'package:app/signinA.dart';
+import 'package:app/signin.dart';
 import 'package:flutter/material.dart';
 
 
@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: "flutter login",
       debugShowCheckedModeBanner: false,
-      home: Signin(),
+      home: AuthPage(),
     );
   }
 }

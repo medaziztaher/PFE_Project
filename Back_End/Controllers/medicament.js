@@ -6,8 +6,8 @@ const db = require('../Models/models');
 
 const ajoutermedicament = async (req, res) => {
   try {
-    // Find the patient by ID
-    const patient = await db.pat.findById(req.params.patientId);
+    // Find the patient by username
+    const patient = await db.patient.findOne({ username: req.body.username });
     
     // If the patient doesn't exist, return a 404 error
     if (!patient) {
@@ -27,7 +27,7 @@ const ajoutermedicament = async (req, res) => {
     patient.liste_de_medicaments.push(medicament._id);
     
     // Save the patient's updated medication list to the database
-    await db.pat.save();
+    await patient.save();
 
     // Return a success response with the new medication record
     return res.status(201).json({ medicament });
@@ -39,6 +39,7 @@ const ajoutermedicament = async (req, res) => {
 }
 
 
+
 //Get medicaments of one of his patients by doctor
 const getmedicamentbymedecin = async (req, res) => {
   try {
@@ -46,14 +47,14 @@ const getmedicamentbymedecin = async (req, res) => {
     const patientId = req.params.patientId;
 
     // Find the medecin by ID
-    const medecin = await db.med.findById(medecinId);
+    const medecin = await db.medecin.findById(medecinId);
     if (!medecin) {
       // If the medecin is not found, return an error message
       return res.status(404).json({ message: 'Medecin not found' });
     }
 
     // Find the patient by ID
-    const patient = await db.pat.findById(patientId);
+    const patient = await db.patient.findById(patientId);
     if (!patient) {
       // If the patient is not found, return an error message
       return res.status(404).json({ message: 'Patient not found' });
@@ -85,7 +86,7 @@ const getAllMedicamentsForPatient = async (req, res) => {
   const patientId  = req.user._id
   try {
     // Find the patient with the extracted ID and populate their medication list with the details
-    const patient = await db.pat.findById(patientId).populate('liste_de_medicaments');
+    const patient = await db.patient.findById(patientId).populate('liste_de_medicaments');
     // If no patient is found with the ID, throw an error
     if (!patient) {
       throw new Error(`Could not find patient with ID ${patientId}`);

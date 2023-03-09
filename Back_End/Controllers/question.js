@@ -9,8 +9,8 @@ const ajouterquestions = async (req, res) => {
   
     try {
       // Find the patient and medecin in the database
-      const patient = await db.pat.findById(patientId);
-      const medecin = await db.med.findById(medecinId);
+      const patient = await db.patient.findById(patientId);
+      const medecin = await db.medecin.findById(medecinId);
   
       if (!patient || !medecin) {
         throw new Error('Patient or medecin not found');
@@ -45,7 +45,7 @@ const getQuestionsByPatient = async (req, res) => {
     // Get the patient ID from the request user object.
     const patientId = req.user._id;
     // Find the patient in the database and populate their list of doctors with their questions and answers.
-    const patient = await db.pat.findById(patientId).populate({
+    const patient = await db.patient.findById(patientId).populate({
       path: 'liste_de_medecins',
       populate: [
         { path: 'liste_de_questions' },
@@ -79,7 +79,7 @@ const getAllQuestionByMedecin = async (req, res) => {
     const medecinId = req.user._id;
 
     // Find the medecin by id and populate the questions they added
-    const medecin = await db.med.findById(medecinId).populate('liste_de_questions', 'text');
+    const medecin = await db.medecin.findById(medecinId).populate('liste_de_questions', 'text');
 
     // Return the questions added by the medecin in the response
     return res.json({ questions: medecin.liste_de_questions });
@@ -104,7 +104,7 @@ const getAllQuestionsByCategorie = async (req, res) => {
     // check user role to determine which sub-document schema to use
     if (role === 'patient') {
       // find the patient using their user id, and populate their list of medecins with their respective questions
-      const foundPatient = await db.pat.findById(userId).populate({
+      const foundPatient = await db.patient.findById(userId).populate({
         path: 'liste_de_medecins',
         populate: { path: 'liste_de_questions', match: { categorie } }
       });
@@ -119,7 +119,7 @@ const getAllQuestionsByCategorie = async (req, res) => {
       return res.json({ questions });
     } else if (role === 'medecin') {
       // find the medecin using their user id, and populate their list of patients with their respective questions
-      const foundMedecin = await db.med.findById(userId).populate({
+      const foundMedecin = await db.medecin.findById(userId).populate({
         path: 'liste_de_patients',
         populate: { path: 'liste_de_questions', match: { categorie } }
       });
@@ -153,7 +153,7 @@ const getAllQuestionsByDate = async (req, res) => {
     // Check if user is a patient
     if (role === 'patient') {
       // Get the patient with the given user ID and populate their `liste_de_medecins` array with only the questions created within the given date range
-      const patient = await db.pat.findById(userId).populate({
+      const patient = await db.patient.findById(userId).populate({
         path: 'liste_de_medecins',
         populate: {
           path: 'liste_de_questions',
@@ -170,7 +170,7 @@ const getAllQuestionsByDate = async (req, res) => {
       return res.json({ questions });
     } else if (role === 'medecin') { // Check if user is a doctor
       // Get the doctor with the given user ID and populate their `liste_de_patients` array with only the questions created within the given date range
-      const medecin = await db.med.findById(userId).populate({
+      const medecin = await db.medecin.findById(userId).populate({
         path: 'liste_de_patients',
         populate: {
           path: 'liste_de_questions',
